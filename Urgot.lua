@@ -740,7 +740,7 @@ function Urgot:KillSteal()
     if self.UrgotMenu.KillSteal.UseR:Value() then
         if IsReady(_R) then
             for i, enemy in pairs(GetEnemyHeroes()) do
-                if ValidTarget(enemy, UrgotR.range) and (enemy.health / enemy.maxHealth <= 24 / 100) then
+                if ValidTarget(enemy, UrgotR.range) and ((enemy.health / enemy.maxHealth <= 24 / 100) or ((enemy.health - RDmg()) / enemy.maxHealth <= 24 / 100)) then
                     LocalControlCastSpell(HK_R, enemy)
                 end
             end
@@ -892,7 +892,7 @@ function Urgot:Combo()
                     
                     else
                     if IsReady(_R) and self.Collision == false then
-                        if ValidTarget(targetR, UrgotR.range) and (targetR.health / targetR.maxHealth <= 24 / 100) then
+                        if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
                             LocalControlCastSpell(HK_R, targetR)
                         end
                     end
