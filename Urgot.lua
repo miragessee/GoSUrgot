@@ -798,7 +798,7 @@ function Urgot:Harass()
                 if IsReady(_Q) and self.Collision == false then
                     if ValidTarget(targetQ, UrgotQ.range) then
                         local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetQ, UrgotQ.range, UrgotQ.delay, UrgotQ.speed, UrgotQ.radius, false)
-                        if hitChance and hitChance >= 1 then
+                        if hitChance and hitChance >= 2 then
                             self:CastQ(targetQ, aimPosition)
                         end
                     end
@@ -846,10 +846,8 @@ function Urgot:Combo()
                 if IsReady(_Q) and self.Collision == false then
                     if ValidTarget(targetQ, UrgotQ.range) then
                         local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetQ, UrgotQ.range, UrgotQ.delay, UrgotQ.speed, UrgotQ.radius, false)
-                        if hitChance and hitChance >= 1 then
-                            if GetMinionCollision(myHero.pos, aimPosition, UrgotQ.radius) == 0 then
-                                self:CastQ(targetQ, aimPosition)
-                            end
+                        if hitChance and hitChance >= 2 then
+                            self:CastQ(targetQ, aimPosition)
                         end
                     end
                 end
