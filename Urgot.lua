@@ -214,10 +214,10 @@ end
 
 function WDmg()
     if myHero:GetSpellData(_W).level == 0 then
-        local Dmg1 = (({20, 24, 28, 32, 36})[1] * myHero.totalDamage + 12)
+        local Dmg1 = (({0.20, 0.24, 0.28, 0.32, 0.36})[1] * myHero.totalDamage + 12)
         return Dmg1
     else
-        local Dmg1 = (({20, 24, 28, 32, 36})[myHero:GetSpellData(_W).level] * myHero.totalDamage + 12)
+        local Dmg1 = (({0.20, 0.24, 0.28, 0.32, 0.36})[myHero:GetSpellData(_W).level] * myHero.totalDamage + 12)
         return Dmg1
     end
 end
