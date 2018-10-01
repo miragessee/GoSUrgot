@@ -194,6 +194,10 @@ function GetDashPos(unit)
     return myHero.pos + (unit.pos - myHero.pos):Normalized() * 500
 end
 
+function GetSpellWName()
+    return myHero:GetSpellData(_W).name
+end
+
 function GetSpellEName()
     return myHero:GetSpellData(_E).name
 end
@@ -789,6 +793,7 @@ end
 
 function Urgot:Harass()
     
+    --print(GetSpellWName()) --UrgotW -- UrgotWCancel
     local targetQ = GOS:GetTarget(UrgotQ.range, "AD")
     local targetW = GOS:GetTarget(UrgotW.range, "AD")
     
@@ -812,13 +817,13 @@ function Urgot:Harass()
             if self.UrgotMenu.Harass.UseW:Value() then
                 if self.CollisionSpellName == "YasuoWMovingWall" then
                     
-                else
-                if IsReady(_W) then
-                    if ValidTarget(targetW, UrgotW.range) then
-                        LocalControlCastSpell(HK_W, targetW)
+                    else
+                    if IsReady(_W) and GetSpellWName() == "UrgotW" then
+                        if ValidTarget(targetW, UrgotW.range) then
+                            LocalControlCastSpell(HK_W, targetW)
+                        end
                     end
                 end
-            end
             end
         end
     end
@@ -833,65 +838,165 @@ function Urgot:CastQ(target, EcastPos)
     end
 end
 
+function Urgot:CastR(target, EcastPos)
+    if LocalGameTimer() - OnWaypoint(target).time > 0.05 and (LocalGameTimer() - OnWaypoint(target).time < 0.125 or LocalGameTimer() - OnWaypoint(target).time > 1.25) then
+        if GetDistance(myHero.pos, EcastPos) <= UrgotR.range then
+            LocalControlCastSpell(HK_R, EcastPos)
+        end
+    end
+end
+
 function Urgot:Combo()
     
     local targetQ = GOS:GetTarget(UrgotQ.range, "AD")
     local targetW = GOS:GetTarget(UrgotW.range, "AD")
     local targetE = GOS:GetTarget(UrgotE.range, "AD")
     local targetR = GOS:GetTarget(UrgotR.range, "AD")
-
-    if targetQ then
-        if not IsImmune(targetQ) then
-            if self.UrgotMenu.Combo.UseQ:Value() then
-                if IsReady(_Q) and self.Collision == false then
-                    if ValidTarget(targetQ, UrgotQ.range) then
-                        local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetQ, UrgotQ.range, UrgotQ.delay, UrgotQ.speed, UrgotQ.radius, false)
-                        if hitChance and hitChance >= 2 then
-                            self:CastQ(targetQ, aimPosition)
-                        end
-                    end
-                end
-            end
-        end
-    end   
-
-    if targetW then
-        if not IsImmune(targetW) then
-            if self.UrgotMenu.Combo.UseW:Value() then
-                if self.CollisionSpellName == "YasuoWMovingWall" then
-                    
-                    else
-                    if IsReady(_W) and self.Collision == false then
-                        if ValidTarget(targetW, UrgotW.range) then
-                            LocalControlCastSpell(HK_W, targetW)
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    if targetE then
-        if not IsImmune(targetE) then
-            if self.UrgotMenu.Combo.UseQ:Value() then
-                if IsReady(_E) and self.Collision == false then
-                    if ValidTarget(targetE, UrgotE.range) then
-                        LocalControlCastSpell(HK_E, targetE)
-                    end
-                end
-            end
-        end
-    end  
     
-    if targetR then
-        if not IsImmune(targetR) then
-            if self.UrgotMenu.Combo.UseR:Value() then
-                if self.CollisionSpellName == "YasuoWMovingWall" then
-                    
-                    else
-                    if IsReady(_R) and self.Collision == false then
-                        if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
-                            LocalControlCastSpell(HK_R, targetR)
+    if IsReady(_E) and targetE then
+        if targetE then
+            if not IsImmune(targetE) then
+                if self.UrgotMenu.Combo.UseE:Value() then
+                    if IsReady(_E) and GetSpellWName() == "UrgotW" and self.Collision == false then
+                        if ValidTarget(targetE, UrgotE.range) then
+                            LocalControlCastSpell(HK_E, targetE)
+                        end
+                    end
+                end
+            end
+        end
+        
+        if targetQ then
+            if not IsImmune(targetQ) then
+                if self.UrgotMenu.Combo.UseQ:Value() then
+                    if IsReady(_Q) and self.Collision == false then
+                        if ValidTarget(targetQ, UrgotQ.range) then
+                            local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetQ, UrgotQ.range, UrgotQ.delay, UrgotQ.speed, UrgotQ.radius, false)
+                            if hitChance and hitChance >= 2 then
+                                self:CastQ(targetQ, aimPosition)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if targetW then
+            if not IsImmune(targetW) then
+                if self.UrgotMenu.Combo.UseW:Value() then
+                    if self.CollisionSpellName == "YasuoWMovingWall" then
+                        
+                        else
+                        if IsReady(_W) and not IsReady(_E) and GetSpellWName() == "UrgotW" and self.Collision == false then
+                            if ValidTarget(targetW, UrgotW.range) then
+                                LocalControlCastSpell(HK_W, targetW)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if targetR then
+            if not IsImmune(targetR) then
+                if self.UrgotMenu.Combo.UseR:Value() then
+                    if self.CollisionSpellName == "YasuoWMovingWall" then
+                        
+                        else
+                        if IsReady(_R) and self.Collision == false then
+                            if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
+                                --LocalControlCastSpell(HK_R, targetR)
+                                local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetR, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
+                                if hitChance and hitChance >= 1 then
+                                    self:CastR(targetR, aimPosition)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    elseif not IsReady(_E) then
+        if targetQ then
+            if not IsImmune(targetQ) then
+                if self.UrgotMenu.Combo.UseQ:Value() then
+                    if IsReady(_Q) and self.Collision == false then
+                        if ValidTarget(targetQ, UrgotQ.range) then
+                            local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetQ, UrgotQ.range, UrgotQ.delay, UrgotQ.speed, UrgotQ.radius, false)
+                            if hitChance and hitChance >= 2 then
+                                self:CastQ(targetQ, aimPosition)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if targetW then
+            if not IsImmune(targetW) then
+                if self.UrgotMenu.Combo.UseW:Value() then
+                    if self.CollisionSpellName == "YasuoWMovingWall" then
+                        
+                        else
+                        if IsReady(_W) and GetSpellWName() == "UrgotW" and self.Collision == false then
+                            if ValidTarget(targetW, UrgotW.range) then
+                                LocalControlCastSpell(HK_W, targetW)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if targetR then
+            if not IsImmune(targetR) then
+                if self.UrgotMenu.Combo.UseR:Value() then
+                    if self.CollisionSpellName == "YasuoWMovingWall" then
+                        
+                        else
+                        if IsReady(_R) and self.Collision == false then
+                            if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
+                                --LocalControlCastSpell(HK_R, targetR)
+                                local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetR, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
+                                if hitChance and hitChance >= 1 then
+                                    self:CastR(targetR, aimPosition)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    else
+        if targetQ then
+            if not IsImmune(targetQ) then
+                if self.UrgotMenu.Combo.UseQ:Value() then
+                    if IsReady(_Q) and self.Collision == false then
+                        if ValidTarget(targetQ, UrgotQ.range) then
+                            local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetQ, UrgotQ.range, UrgotQ.delay, UrgotQ.speed, UrgotQ.radius, false)
+                            if hitChance and hitChance >= 2 then
+                                self:CastQ(targetQ, aimPosition)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if targetR then
+            if not IsImmune(targetR) then
+                if self.UrgotMenu.Combo.UseR:Value() then
+                    if self.CollisionSpellName == "YasuoWMovingWall" then
+                        
+                        else
+                        if IsReady(_R) and self.Collision == false then
+                            if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
+                                --LocalControlCastSpell(HK_R, targetR)
+                                local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetR, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
+                                if hitChance and hitChance >= 1 then
+                                    self:CastR(targetR, aimPosition)
+                                end
+                            end
                         end
                     end
                 end
@@ -1891,4 +1996,3 @@ function HPred:GetDistance(p1, p2)
     end
     return _sqrt(self:GetDistanceSqr(p1, p2))
 end
-
