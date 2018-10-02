@@ -745,7 +745,11 @@ function Urgot:KillSteal()
         if IsReady(_R) then
             for i, enemy in pairs(GetEnemyHeroes()) do
                 if ValidTarget(enemy, UrgotR.range) and ((enemy.health / enemy.maxHealth <= 24 / 100) or ((enemy.health - RDmg()) / enemy.maxHealth <= 24 / 100)) then
-                    LocalControlCastSpell(HK_R, enemy)
+                    --LocalControlCastSpell(HK_R, enemy)
+                    local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, enemy, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
+                    if hitChance and hitChance >= 2 then
+                        self:CastR(enemy, aimPosition)
+                    end
                 end
             end
         end
@@ -907,7 +911,7 @@ function Urgot:Combo()
                             if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
                                 --LocalControlCastSpell(HK_R, targetR)
                                 local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetR, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
-                                if hitChance and hitChance >= 1 then
+                                if hitChance and hitChance >= 2 then
                                     self:CastR(targetR, aimPosition)
                                 end
                             end
@@ -958,7 +962,7 @@ function Urgot:Combo()
                             if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
                                 --LocalControlCastSpell(HK_R, targetR)
                                 local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetR, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
-                                if hitChance and hitChance >= 1 then
+                                if hitChance and hitChance >= 2 then
                                     self:CastR(targetR, aimPosition)
                                 end
                             end
@@ -993,7 +997,7 @@ function Urgot:Combo()
                             if ValidTarget(targetR, UrgotR.range) and ((targetR.health / targetR.maxHealth <= 24 / 100) or ((targetR.health - RDmg()) / targetR.maxHealth <= 24 / 100)) then
                                 --LocalControlCastSpell(HK_R, targetR)
                                 local hitChance, aimPosition = HPred:GetHitchance(myHero.pos, targetR, UrgotR.range, UrgotR.delay, UrgotR.speed, UrgotR.radius, false)
-                                if hitChance and hitChance >= 1 then
+                                if hitChance and hitChance >= 2 then
                                     self:CastR(targetR, aimPosition)
                                 end
                             end
